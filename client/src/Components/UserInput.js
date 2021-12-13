@@ -9,13 +9,14 @@ const UserInput = ({ sendInfoToParent }) => {
 
 	return (
 		<div>
-			<div style={{ display: "flex" , flexFlow: "row", height: "50px", justifyContent: "center"}}>
+			{/* <div style={{ display: "flex" , flexFlow: "row", height: "50px", justifyContent: "center"}}>
 				<input type="text" placeholder='Username' onChange={(e) => {setUsername(e.target.value)}}/>
 				<select name="Choose Parameter" id="" onSelect={(e) => {setOption(e.target.value)}}>
 					<option value="repos">Get Repos</option>
 				</select>
 				<button onClick={() => sendInfoToParent({ username, option })}>Run Query</button>
-			</div>
+			</div> */}
+
 		</div>
 	)
 }
