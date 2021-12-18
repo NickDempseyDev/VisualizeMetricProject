@@ -1,0 +1,8 @@
+.loginScreen {
+	height: auto;
+	width: auto;
+	margin: auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}

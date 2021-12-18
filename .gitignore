@@ -4,6 +4,7 @@
 node_modules
 secrets.js
 todo.md
+server
 /client/src/firebase/config.js
 # client/node_modules
 # server/node_modules
