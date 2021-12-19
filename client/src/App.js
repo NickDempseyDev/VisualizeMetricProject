@@ -2,6 +2,7 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import Login from './Components/Login'
 import Home from './Components/Home'
+import './App.css'
 
 export default function App() {
 
@@ -12,7 +13,7 @@ export default function App() {
   }, [loginAttempt])
 
   return (
-    <div style={{position: "absolute", width: "100%", height: "100%"}}>
+    <div className='App'>
       {/* <pre>{JSON.stringify(state, null, 2)}</pre> */}
       {/* {state.map((item) => {
         return (<pre>{JSON.stringify(item)}</pre>)

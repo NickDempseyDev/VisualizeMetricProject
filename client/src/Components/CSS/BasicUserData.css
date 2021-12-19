@@ -1,0 +1,23 @@
+.basic-data {
+	min-height: 500px;
+	padding: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.basic-data > * {
+	flex: 1 1 25%;
+}
+
+.col {
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, 1);
+	padding: 3em;
+	background-color: #333E;
+	/* border: 3px solid rgba(0, 0, 0, 1) */
+}
+
+div > p {
+	margin: 0;
+	color: white;
+}

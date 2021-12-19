@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import './UserInput.css'
+import './CSS/UserInput.css'
 
 const UserInput = ({ sendInfoToParent }) => {
 

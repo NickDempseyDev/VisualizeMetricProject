@@ -1,0 +1,14 @@
+.repo-header {
+	background-color: #7770;
+	padding: 10px;
+	gap: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+}
+
+.repo-header > * {
+	flex: 1 1 32%;
+	text-align: center;
+}

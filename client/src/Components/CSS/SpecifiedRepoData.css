@@ -13,6 +13,6 @@
 .col {
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 1);
 	padding: 3em;
-	background-color: aqua;
+	background-color: #333E;
 	/* border: 3px solid rgba(0, 0, 0, 1) */
 }
