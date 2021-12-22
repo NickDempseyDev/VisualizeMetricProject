@@ -11,3 +11,75 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button {
+  outline: none;
+  border: none;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  color: white;
+  padding: 0.5em 1em;
+  background-color: rgb(117, 58, 172);
+  font-family: Calibri;
+  font-size: 1em;
+  border-radius: 0.25em;
+  box-shadow: 0.15em 0.15em 0.1em 0.1em #3336;
+  font-weight: bold;
+  transition: background-color 200ms;
+  margin: 0.25em;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: blueviolet;
+}
+
+button:active {
+  background-color: rgb(160, 59, 255);
+}
+
+button:focus-visible {
+  background-color: blueviolet;
+  outline: 2px solid black;
+}
+
+input {
+  outline: none;
+  border: none;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  color: #333;
+  border: 1px solid rgb(112, 51, 255);
+  padding: 0.5em 1em;
+  /* background-color: rgb(175, 140, 255); */
+  background-color: rgb(31, 31, 31);
+  font-family: Calibri;
+  font-size: 1em;
+  border-radius: 0.25em;
+  box-shadow: 0.1em 0.1em 0.1em 0 #3336;
+  transition: background-color 200ms;
+}
+
+select {
+  outline: none;
+  border: none;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  color: rgb(133, 133, 133);
+  border: 1px solid rgb(26, 26, 26);
+  padding: 0.5em 1em;
+  background-color: rgba(43, 43, 43, 1);
+  /* backdrop-filter: blur(5px); */
+  font-family: Calibri;
+  font-size: 1em;
+  border-radius: 0.25em;
+  box-shadow: 0.1em 0.1em 0.1em 0 #3336;
+  transition: background-color 200ms;
+}
+
+h1 {
+  color: white;
+}

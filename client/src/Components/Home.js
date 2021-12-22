@@ -25,10 +25,10 @@ const Home = () => {
 					tempRepos.push(repo.repoName);
 				});
 				console.log(tempRepos);
+				setRepos(tempRepos);
 				if (tempRepos.length != 0) {
 					setCurrentRepo(tempRepos[0]);
 				}
-				setRepos(tempRepos);
 			});
 		}
 	}, [username])
@@ -36,9 +36,9 @@ const Home = () => {
 	return (
 		<div>
 			<DataHeader changeUsername={setUsername} username={username}/>
-			{username !== "" ? <BasicUserData username={username}/> : <></>}
-			{username !== "" && currentRepo !== "" ? <RepoHeader changeRepo={setCurrentRepo} repo={currentRepo} repos={repos}/> : <></>}
-			{username !== "" && currentRepo !== "" ? <SpecifiedRepoData username={username} repo={currentRepo} /> : <></>}
+			{username !== "" && <BasicUserData username={username}/>}
+			{username !== "" && currentRepo !== "" && <RepoHeader changeRepo={setCurrentRepo} repo={currentRepo} repos={repos}/>}
+			{username !== "" && currentRepo !== "" && <SpecifiedRepoData username={username} repo={currentRepo} />}
 		</div>
 	)
 }
