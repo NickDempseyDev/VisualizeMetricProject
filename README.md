@@ -1,4 +1,11 @@
-# VisualizeMetricProject
+# Visualize GitHub Metric Project
+by Nicholas Dempsey
 
-## Software Engineering College Assignment
+## Link to Website
+<https://visualize-github-api.herokuapp.com/>
 
+## Tech Stack 
+- React
+- Node JS
+- Firebase / Firestore (Datebase & Authentication)
+- Heroku (hosting)
