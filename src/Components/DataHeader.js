@@ -1,6 +1,8 @@
 import React from 'react'
 import './CSS/DataHeader.css'
 import { useState } from 'react'
+import { getFirestore, deleteDoc, doc } from "firebase/firestore";
+const firestore = getFirestore();
 
 const DataHeader = ({ changeUsername, username, setRefresh }) => {
 
@@ -8,9 +10,11 @@ const DataHeader = ({ changeUsername, username, setRefresh }) => {
 
 	let counter = 1;
 
-	const logout = () => {
+	const logout = async () => {
 		sessionStorage.removeItem("tkn");
 		sessionStorage.removeItem("usr");
+		const user = doc(firestore, `users/${username}`);
+		await deleteDoc(user);
 		setRefresh(counter++);
 	}
 
