@@ -1,10 +1,10 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, PieChart, Pie, Cell } from 'recharts'; 
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts'; 
 import "./CSS/BasicUserData.css";
 import { getAllRepoLanguages, getReposContributedTo } from "../ApiHelpers";
 
-const BasicData = ({ username }) => {
+const BasicData = ({ username, setIsRateLimitExceeded }) => {
 
 	const [data, setData] = useState("");
 	const [socialDisplayData, setSocialDisplayData] = useState("");
@@ -12,7 +12,12 @@ const BasicData = ({ username }) => {
 
 	useEffect(() => {
 		getAllRepoLanguages(username).then(res => {
-			setData(res);
+			if (!Number.isNaN(res[0].value)) {	
+				setData(res);
+			} else {
+				setData("");
+				setIsRateLimitExceeded(true);
+			}
 		});
 	}, [username]);
 
@@ -90,8 +95,8 @@ const BasicData = ({ username }) => {
 			<select style={{marginBottom: "10px"}} name="" id="" onChange={(e) => {setIntensiveQueryMode(e.target.value)}}>
 			<option disabled value="">Select Query</option>
 			<option value="none">Neither</option>
-			<option value="high">Intensive (numerous queries, i.e. one for each repo)</option>
-			<option value="mid">Less Intensive (numerous queries, but only for owned repos)</option>
+			<option value="high">Intensive (numerous API calls, i.e. one for each repo)</option>
+			<option value="mid">Less Intensive (numerous API calls i.e. owned repos only)</option>
 			</select>
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== "" ? 
 			<div>
@@ -100,26 +105,7 @@ const BasicData = ({ username }) => {
 			</div> : <></>}
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== ""? 
 			<ResponsiveContainer aspect={3} width={"99%"}>
-       			{/* <BarChart
-       			  width={500}
-       			  height={300}
-       			  data={socialDisplayData}
-       			  margin={{
-       			    top: 5,
-       			    right: 30,
-       			    left: 20,
-       			    bottom: 5,
-       			  }}
-       			>
-       			  <CartesianGrid strokeDasharray="3 3" />
-       			  <XAxis dataKey="name" />
-       			  <YAxis interval={1} domain={[0, Math.max(socialDisplayData["sole contributor repos"], socialDisplayData["multiple contributor repos"])]}/>
-       			  <Tooltip />
-       			  <Legend />
-       			  <Bar dataKey="value" fill="#8884d8" />
-       			  <Bar dataKey="uv" fill="#82ca9d" /> */}
-       			{/* </BarChart> */}
-				   <PieChart width={900} height={900}>
+				<PieChart width={900} height={900}>
          			<Pie
          			  data={socialDisplayData}
          			  cx="50%"
@@ -134,7 +120,7 @@ const BasicData = ({ username }) => {
          			    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
          			  ))}
          			</Pie>
-        		  </PieChart>
+        		</PieChart>
       		</ResponsiveContainer> : <></>}
       	</div>
       	<div className="col">

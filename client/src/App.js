@@ -7,6 +7,7 @@ import './App.css'
 export default function App() {
 
   const [loginAttempt, setLoginAttempt] = useState(false);
+  const [refresh, setRefresh] = useState("")
 
   useEffect(() => {
 
@@ -18,7 +19,7 @@ export default function App() {
       {/* {state.map((item) => {
         return (<pre>{JSON.stringify(item)}</pre>)
       })} */}
-      {!sessionStorage.getItem("tkn") ? <Login callBck={setLoginAttempt}/> : <Home/>}
+      {!sessionStorage.getItem("tkn") ? <Login callBck={setLoginAttempt}/> : <Home setRefresh={setRefresh}/>}
       
     </div>
   )

@@ -18,35 +18,40 @@ const getOptions = () => {
   }
 }
 
+// with pagination
 export const getCommitsOverTime = async (username, repo) => {
   counter++;
   console.log(counter);
 
   try {
-    const res = await axios(`/repos/${username}/${repo}/commits`, getOptions())
-    console.log(res);
-    const data = res.data;
-    let map = {};
-    console.log("lenght of arr" ,data.length);
-    for (let index = 0; index < data.length; index++) {
-      console.log(map);
-      if (!map[(data[index].commit.author.date).split("T")[0]]) {
-        map[(data[index].commit.author.date).split("T")[0]] = 1;
-        console.log(data[index].commit.author.date);
-      } else {
-        map[(data[index].commit.author.date).split("T")[0]] = map[(data[index].commit.author.date).split("T")[0]] + 1;
-        console.log(data[index].commit.author.date);
+    let resArr = [];
+    let lastPage = 1;
+    let resDataArr = [];
+    const res = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions())
+    resDataArr.push(res.data);
 
+    if (res.headers.link) {
+      lastPage = res.headers.link.split("100&page=")[2].split(">;")[0];
+    }
+
+    for (let i = 2; i <= lastPage; i++) {
+      const tempRes = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=${i}`, getOptions())
+      resDataArr.push(tempRes.data);
+    }
+
+    let map = {};
+
+    for (let i = 0; i < resDataArr.length; i++) {
+      const dataArr = resDataArr[i];
+      for (let j = 0; j < dataArr.length; j++) {
+        if (!map[(dataArr[j].commit.author.date).split("T")[0]]) {
+          map[(dataArr[j].commit.author.date).split("T")[0]] = 1;
+        } else {
+          map[(dataArr[j].commit.author.date).split("T")[0]] = map[(dataArr[j].commit.author.date).split("T")[0]] + 1;
+        }
       }
     }
 
-    // data.forEach(commit => {
-    //   if (!map[(commit.commit.author.date).split("T")[0]]) {
-    //     map[(commit.commit.author.date).split("T")[0]] = 1;
-    //   } else {
-    //     map[(commit.commit.author.date).split("T")[0]] = map[(commit.commit.author.date).split("T")[0]] + 1;
-    //   }
-    // });
     const entries = Object.entries(map);
     let ret = [];
     entries.forEach(entry => {
@@ -55,9 +60,77 @@ export const getCommitsOverTime = async (username, repo) => {
     console.log(ret);
     return ret;
   } catch (error) {
+    console.log(error);
     return [-1, error];
   }
 
+}
+
+export const getAdditionsDeletionsRatios = async (username, repo) => {
+  // first get the last date of commit (to the previous Sunday)
+  const resA = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions());
+  let resLastCommit;
+  if (resA.data.length == 100) {
+    const lastPage = resA.headers.link.split("100&page=")[2].split(">;")[0];
+    resLastCommit = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=${lastPage}`, getOptions());
+  } else {
+    resLastCommit = resA;
+  }
+  let lastCommitDate = new Date(resLastCommit.data[resLastCommit.data.length - 1].commit.author.date);
+  let day = lastCommitDate.getDay();
+  if( day !== 0 ) {
+    lastCommitDate.setHours(-24 * (day));
+  }
+
+  // get the first page of activity and check the size, if < 52 continue, otherwise calculate what page the last commit would be on
+  const resB = await axios(`/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
+  const firstDateInMs = new Date(resB.data[0][0]);
+  let firstDate = new Date(firstDateInMs)
+  let lastPage;
+  if (resB.data.length == 100) {
+    let weeks = (lastCommitDate.getTime() - firstDate.getTime()) / (7 * 24 * 60 * 60 * 1000);
+    lastPage = weeks / 100 + (weeks % 100 != 0 ? 1 : 0);
+  } else {
+    lastPage = 1;
+  }
+  
+  // get the data up until the last commit
+  let resBs = [];
+  resBs.push(resB.data);
+  for (let i = 2; i <= lastPage; i++) {
+    const tempData = await axios(`/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=${i}`, getOptions());
+    resBs.push(tempData.data);
+  }
+
+  // create one big array
+  let ret = [];
+  for (let i = 0; i < resBs.length; i++) {
+    const element = resBs[i];
+    for (let j = 0; j < element.length; j++) {
+      let elementInner = element[j];
+      let temp = elementInner[0]
+      let currDate = new Date(temp * 1000);
+      elementInner = {
+        date: currDate.toISOString().split('T')[0],
+        additions: elementInner[1],
+        deletions: (elementInner[2] == 0 ? 0 : -elementInner[2])
+      };
+      ret.push(elementInner);
+    }
+  }
+
+  // remove any trailing zero entries
+  let counter = ret.length - 1;
+  while (counter > 0) {
+    if (ret[counter]["additions"] == 0 && ret[counter]["deletions"] == 0) {
+      ret.pop();
+      counter--;
+    } else {
+      break;
+    }
+  }
+
+  return ret;
 }
 
 export const getRepos = async (username) => {
@@ -84,7 +157,7 @@ export const getRepoLanguages = async (username, repo) => {
   counter++;
   console.log(counter);
   try {
-    const ret = await axios.get(`/repos/${username}/${repo}/languages`, getOptions());
+    const ret = await axios.get(`/repos/${username}/${repo}/languages?per_page=100`, getOptions());
     return ret.data; 
   } catch (error) {
     return [-1, error];
@@ -122,7 +195,7 @@ export const getContributers = async (username, repo) => {
   counter++;
   console.log(counter);
   try {
-    const ret = await axios.get(`/repos/${username}/${repo}/contributors`, getOptions());
+    const ret = await axios.get(`/repos/${username}/${repo}/contributors?per_page=100`, getOptions());
     return ret.data.length;
   } catch (error) {
     return [-1, error];

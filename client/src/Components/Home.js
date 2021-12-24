@@ -7,13 +7,14 @@ import RepoHeader from './RepoHeader'
 import * as helpers from '../ApiHelpers'
 import { useState, useEffect } from 'react'
 
-const Home = () => {
+const Home = ({ setRefresh }) => {
 
 	const [username, setUsername] = useState("");
 	const [repos, setRepos] = useState([]);
 	const [currentRepo, setCurrentRepo] = useState("");
+	const [isRateLimitExceeded, setIsRateLimitExceeded] = useState(false);
 
-	useEffect(() => {
+	useEffect(async () => {
 		setUsername(sessionStorage.getItem("usr"));
 	}, []);
 	
@@ -33,12 +34,14 @@ const Home = () => {
 		}
 	}, [username])
 
+	
 	return (
 		<div>
-			<DataHeader changeUsername={setUsername} username={username}/>
-			{username !== "" && <BasicUserData username={username}/>}
-			{username !== "" && currentRepo !== "" && <RepoHeader changeRepo={setCurrentRepo} repo={currentRepo} repos={repos}/>}
-			{username !== "" && currentRepo !== "" && <SpecifiedRepoData username={username} repo={currentRepo} />}
+			{!isRateLimitExceeded && <DataHeader changeUsername={setUsername} username={username} setRefresh={setRefresh}/>}
+			{username !== "" && !isRateLimitExceeded && <BasicUserData username={username} setIsRateLimitExceeded={setIsRateLimitExceeded}/>}
+			{username !== "" && currentRepo !== "" && !isRateLimitExceeded && <RepoHeader changeRepo={setCurrentRepo} repo={currentRepo} repos={repos}/>}
+			{username !== "" && currentRepo !== "" && !isRateLimitExceeded && <SpecifiedRepoData username={username} repo={currentRepo} />}
+			{isRateLimitExceeded && <h1 style={{margin: "0", padding: "1em"}}>Sorry! The rate limited for the GitHub API from your IP address has been reached <br /> <br /> Please try again later (refresh)</h1>}
 		</div>
 	)
 }
