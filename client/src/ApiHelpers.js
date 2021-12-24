@@ -3,8 +3,6 @@ import axios from "axios";
 
 const firestore = getFirestore();
 
-let counter = 0;
-
 const getOptions = () => {
   if (sessionStorage.getItem("tkn") !== "null") { 
     return {
@@ -18,16 +16,29 @@ const getOptions = () => {
   }
 }
 
+const storeToDB = (username, data, label1) => {
+  const user = doc(firestore, `users/${username}`);
+  setDoc(user, { label: data });
+}
+
+const retrieveFromDB = (username, label) => {
+  const user = doc(firestore, `users/${username}`);
+  const snapshot = await getDoc(user);
+  if (snapshot.exists() && snapshot.data()[label]) {
+    return snapshot.data()[label];
+  } else {
+    return [-1];
+  }
+}
+
 // with pagination
 export const getCommitsOverTime = async (username, repo) => {
-  counter++;
-  console.log(counter);
 
   try {
     let resArr = [];
     let lastPage = 1;
     let resDataArr = [];
-    const res = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions())
+    const res = await axios(`https://api.github.com/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions())
     resDataArr.push(res.data);
 
     if (res.headers.link) {
@@ -35,7 +46,7 @@ export const getCommitsOverTime = async (username, repo) => {
     }
 
     for (let i = 2; i <= lastPage; i++) {
-      const tempRes = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=${i}`, getOptions())
+      const tempRes = await axios(`https://api.github.com/repos/${username}/${repo}/commits?per_page=100&page=${i}`, getOptions())
       resDataArr.push(tempRes.data);
     }
 
@@ -68,11 +79,11 @@ export const getCommitsOverTime = async (username, repo) => {
 
 export const getAdditionsDeletionsRatios = async (username, repo) => {
   // first get the last date of commit (to the previous Sunday)
-  const resA = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions());
+  const resA = await axios(`https://api.github.com/repos/${username}/${repo}/commits?per_page=100&page=1`, getOptions());
   let resLastCommit;
   if (resA.data.length == 100) {
     const lastPage = resA.headers.link.split("100&page=")[2].split(">;")[0];
-    resLastCommit = await axios(`/repos/${username}/${repo}/commits?per_page=100&page=${lastPage}`, getOptions());
+    resLastCommit = await axios(`https://api.github.com/repos/${username}/${repo}/commits?per_page=100&page=${lastPage}`, getOptions());
   } else {
     resLastCommit = resA;
   }
@@ -83,7 +94,7 @@ export const getAdditionsDeletionsRatios = async (username, repo) => {
   }
 
   // get the first page of activity and check the size, if < 52 continue, otherwise calculate what page the last commit would be on
-  const resB = await axios(`/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
+  const resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
   const firstDateInMs = new Date(resB.data[0][0]);
   let firstDate = new Date(firstDateInMs)
   let lastPage;
@@ -98,11 +109,11 @@ export const getAdditionsDeletionsRatios = async (username, repo) => {
   let resBs = [];
   resBs.push(resB.data);
   for (let i = 2; i <= lastPage; i++) {
-    const tempData = await axios(`/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=${i}`, getOptions());
+    const tempData = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=${i}`, getOptions());
     resBs.push(tempData.data);
   }
 
-  // create one big array
+  // create one big array for easy display
   let ret = [];
   for (let i = 0; i < resBs.length; i++) {
     const element = resBs[i];
@@ -134,8 +145,6 @@ export const getAdditionsDeletionsRatios = async (username, repo) => {
 }
 
 export const getRepos = async (username) => {
-  counter++;
-  console.log(counter);
   const user = doc(firestore, `users/${username}`);
   const snapshot = await getDoc(user);
 
@@ -143,7 +152,7 @@ export const getRepos = async (username) => {
     return snapshot.data().data;
   } else {
     try {
-      const ret = await axios.get(`/users/${username}/repos`, getOptions());
+      const ret = await axios.get(`https://api.github.com/users/${username}/repos`, getOptions());
       const data = formatRepos(ret.data);
       setDoc(user, { data });
       return data;
@@ -154,10 +163,8 @@ export const getRepos = async (username) => {
 };
 
 export const getRepoLanguages = async (username, repo) => {
-  counter++;
-  console.log(counter);
   try {
-    const ret = await axios.get(`/repos/${username}/${repo}/languages?per_page=100`, getOptions());
+    const ret = await axios.get(`https://api.github.com/repos/${username}/${repo}/languages?per_page=100`, getOptions());
     return ret.data; 
   } catch (error) {
     return [-1, error];
@@ -165,8 +172,6 @@ export const getRepoLanguages = async (username, repo) => {
 };
 
 export const getAllRepoLanguages = async (username) => {
-  counter++;
-  console.log(counter);
   let languages = {};
   const repos = await getRepos(username);
   let total = 0;
@@ -192,10 +197,8 @@ export const getAllRepoLanguages = async (username) => {
 };
 
 export const getContributers = async (username, repo) => {
-  counter++;
-  console.log(counter);
   try {
-    const ret = await axios.get(`/repos/${username}/${repo}/contributors?per_page=100`, getOptions());
+    const ret = await axios.get(`https://api.github.com/repos/${username}/${repo}/contributors?per_page=100`, getOptions());
     return ret.data.length;
   } catch (error) {
     return [-1, error];
@@ -203,10 +206,8 @@ export const getContributers = async (username, repo) => {
 }
 
 export const getReposContributedTo = async (username, intensive) => {
-  counter++;
-  console.log(counter);
   const { data: { data } } = await axios({
-    url: '/graphql',
+    url: 'https://api.github.com/graphql',
     method: 'POST',
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem("tkn")}`,

@@ -100,8 +100,8 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 			</select>
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== "" ? 
 			<div>
-				<p><span style={{color: COLORS[0]}}>{parseFloat((socialDisplayData[0].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} is the sole contributor</p>
-				<p><span style={{color: "#000"}}>{parseFloat((socialDisplayData[1].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} is one of multiple contributors</p>
+				<p style={{color: "white"}}><span style={{color: COLORS[0]}}>{parseFloat((socialDisplayData[0].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} has contributed to, they are sole contributor</p>
+				<p style={{color: "white"}}><span style={{color: "#000"}}>{parseFloat((socialDisplayData[1].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} has contributed to, they are one of multiple contributors</p>
 			</div> : <></>}
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== ""? 
 			<ResponsiveContainer aspect={3} width={"99%"}>
