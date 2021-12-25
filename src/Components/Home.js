@@ -1,5 +1,5 @@
+ /* eslint-disable */
 import React from 'react'
-// import "./Home.css"
 import BasicUserData from './BasicUserData'
 import SpecifiedRepoData from './SpecifiedRepoData'
 import DataHeader from './DataHeader'
@@ -25,7 +25,6 @@ const Home = ({ setRefresh }) => {
 				repos.forEach(repo => {
 					tempRepos.push(repo.repoName);
 				});
-				console.log(tempRepos);
 				setRepos(tempRepos);
 				if (tempRepos.length != 0) {
 					setCurrentRepo(tempRepos[0]);

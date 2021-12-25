@@ -1,3 +1,4 @@
+ /* eslint-disable */
 import React from "react";
 import { useState, useEffect } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts'; 
@@ -38,7 +39,6 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 					});
 					sDD.push({name: "sole contributor repos", value: countL})
 					sDD.push({name: "multiple contributor repos", value: countG})
-					console.log(res, sDD);
 					setSocialDisplayData(sDD);
 				})
 				break;
@@ -46,7 +46,6 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 			case "mid":
 				getReposContributedTo(username, false).then(res => {
 					const keys = Object.keys(res);
-					console.log(res);
 					let sDD = [];
 					let countG = 0;
 					let countL = 0;
@@ -59,8 +58,6 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 					});
 					sDD.push({name: "sole contributor repos", value: countL})
 					sDD.push({name: "multiple contributor repos", value: countG})
-					console.log(sDD);
-					console.log(res);
 					setSocialDisplayData(sDD);
 				})
 				break;

@@ -2,18 +2,10 @@ import React from "react";
 import { login } from "../firebase/config";
 import axios from 'axios'
 import "./CSS/loginScreen.css"
-import { useEffect, useState } from "react";
-import { async } from "@firebase/util";
+import { useState } from "react";
 
 const Login = ({ callBck }) => {
 
-  // onChange in the inputs 
-  // useEffect(() => {
-  //   effect
-  //   return () => {
-  //     cleanup
-  //   }
-  // }, [input])
   let counter = 0;
 
   const [usernameManual, setUsernameManual] = useState("");
@@ -30,7 +22,7 @@ const Login = ({ callBck }) => {
   }
 
   const loginManual = () => {
-    if (usernameManual != "" && tokenManual != "") {
+    if (usernameManual !== "" && tokenManual !== "") {
       validateUser().then(res => {
         if (res) {
           sessionStorage.setItem("usr", usernameManual);

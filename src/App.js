@@ -10,8 +10,7 @@ export default function App() {
   const [refresh, setRefresh] = useState("")
 
   useEffect(() => {
-
-  }, [loginAttempt])
+  }, [loginAttempt, refresh])
 
   return (
     <div className='App'>

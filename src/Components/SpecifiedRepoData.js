@@ -1,3 +1,4 @@
+ /* eslint-disable */
 import React from "react";
 import "./CSS/SpecifiedRepoData.css";
 import { ResponsiveContainer, Tooltip, LineChart, CartesianGrid, XAxis, YAxis, Legend, Line, BarChart, ReferenceLine, Brush, Bar } from 'recharts'; 
