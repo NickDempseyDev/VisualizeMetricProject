@@ -14,5 +14,5 @@ note - may take up to 60 seconds to start up...
 ## Tech Stack 
 - React
 - Node JS
-- Firebase / Firestore (Datebase & Authentication)
-- Heroku (hosting)
+- Firebase / Firestore (Database & Authentication)
+- Heroku (Hosting)
