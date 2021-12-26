@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  react:
+    image: node:16
+    ports:
+    - 3000:3000
+    working_dir: /dev/app
+    volumes:
+    - .:/dev/app
+    command: sh -c "npm start"
