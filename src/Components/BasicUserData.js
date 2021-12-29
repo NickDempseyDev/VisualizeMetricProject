@@ -3,15 +3,25 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts'; 
 import "./CSS/BasicUserData.css";
-import { getAllRepoLanguages, getReposContributedTo } from "../ApiHelpers";
+import { getAllRepoLanguages, getReposContributedTo, getUser } from "../ApiHelpers";
 
 const BasicData = ({ username, setIsRateLimitExceeded }) => {
 
+	const [user, setUser] = useState({});
 	const [data, setData] = useState("");
 	const [socialDisplayData, setSocialDisplayData] = useState("");
 	const [intensiveQueryMode, setIntensiveQueryMode] = useState(false);
 
 	useEffect(() => {
+		getUser(username).then(res => {
+			let date = formatDate(res.created_at);
+			setUser({
+				avatar: res.avatar_url,
+				bio: res.bio,
+				location: res.location,
+				created: date
+			})
+		});
 		getAllRepoLanguages(username).then(res => {
 			if (!Number.isNaN(res[0].value)) {	
 				setData(res);
@@ -21,6 +31,11 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 			}
 		});
 	}, [username]);
+
+	const formatDate = (date) => {
+		let temp = new Date(date);
+		return temp.toDateString();
+	};
 
 	useEffect(() => {
 		switch (intensiveQueryMode) {
@@ -83,12 +98,14 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 	  };
 
 	return (
+	<>
+	<div style={{height: "125px"}}></div>
     <div className="basic-data">
       	<div className="col">
       	  	<h1>How Social is {username}?</h1>
-			<p style={{color: "white"}}><span style={{color: "red"}}>Intensive</span> = 1 API for every repository {username} has contributed to (including their own repos)</p>
+			{/* <p style={{color: "white"}}><span style={{color: "red"}}>Intensive</span> = 1 API for every repository {username} has contributed to (including their own repos)</p>
 			<p style={{color: "white"}}><span style={{color: "yellow"}}>Less Intensive</span> = 1 API for every repository that {username} owns</p>
-			<p style={{color: "white"}}><span style={{color: "Green"}}>Neither</span> = Do not make the API calls</p>
+			<p style={{color: "white"}}><span style={{color: "Green"}}>Neither</span> = Do not make the API calls</p> */}
 			<select style={{marginBottom: "10px"}} name="" id="" onChange={(e) => {setIntensiveQueryMode(e.target.value)}}>
 			<option disabled value="">Select Query</option>
 			<option value="none">Neither</option>
@@ -120,6 +137,20 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
         		</PieChart>
       		</ResponsiveContainer> : <></>}
       	</div>
+		{user.avatar && <div className="col">
+      		<h1>{username}'s basic profile</h1>
+			<div style={{display: "flex", justifyContent: "center", gap: "10px"}}>
+				<img style={{width: "200px", height: "200px"}} src={user?.avatar} alt="" />
+				<div style={{color:"white"}}>
+					<p><b>User Bio</b><br/>{user.bio && user.bio !== "" ? user.bio : "no bio found"}</p>
+					<br />
+					<p><b>Location</b><br/>{user.location ? user.location : "unknown"}</p>
+					<br />
+					<p><b>Account Created On</b><br/>{user.created ? user.created : "unknown"}</p>
+				</div>
+
+			</div>
+      	</div>}
       	<div className="col">
 			<h1>What Languages does {username} use the most?</h1>
 		  	{data && <ResponsiveContainer aspect={2} width={"99%"}>
@@ -139,6 +170,7 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 		  	</ResponsiveContainer>}
 		</div>
     </div>
+	</>
   	);
 };
 

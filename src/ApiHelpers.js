@@ -34,6 +34,17 @@ const retrieveFromDB = async (username, label) => {
   }
 }
 
+export const getUser = async (username) => {
+  const dbRes = await retrieveFromDB(username, `${username}`);
+  if (dbRes[0] !== -1) {
+    return dbRes;
+  } else {
+    const res = await axios(`https://api.github.com/users/${username}`, getOptions())
+    await storeToDB(username, res.data, `${username}`);
+    return res.data;
+  }
+}
+
 // with pagination
 export const getCommitsOverTime = async (username, repo) => {
 
@@ -98,15 +109,19 @@ export const getAdditionsDeletionsRatios = async (username, repo) => {
     if( day !== 0 ) {
       lastCommitDate.setHours(-24 * (day));
     }
-  
+    console.log("here");
     // get the first page of activity and check the size, if < 52 continue, otherwise calculate what page the last commit would be on
-    const resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
+    let resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
+    console.log(resB);
+    // while (resB.status !== 200) {
+    //   resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
+    // }
     const firstDateInMs = new Date(resB.data[0][0]);
     let firstDate = new Date(firstDateInMs)
     let lastPage;
     if (resB.data.length === 100) {
       let weeks = (lastCommitDate.getTime() - firstDate.getTime()) / (7 * 24 * 60 * 60 * 1000);
-      lastPage = weeks / 100 + (weeks % 100 != 0 ? 1 : 0);
+      lastPage = weeks / 100 + (weeks % 100 !== 0 ? 1 : 0);
     } else {
       lastPage = 1;
     }
