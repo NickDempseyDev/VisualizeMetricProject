@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react'
 const Home = ({ setRefresh }) => {
 
 	const [username, setUsername] = useState("");
+	const [allUsernames, setAllUsernames] = useState([]);
 	const [repos, setRepos] = useState([]);
 	const [currentRepo, setCurrentRepo] = useState("");
 	const [isRateLimitExceeded, setIsRateLimitExceeded] = useState(false);
@@ -30,13 +31,16 @@ const Home = ({ setRefresh }) => {
 					setCurrentRepo(tempRepos[0]);
 				}
 			});
+			if (!allUsernames.includes(username)) {
+				setAllUsernames([...allUsernames, username])
+			}
 		}
 	}, [username])
 
 	
 	return (
 		<div>
-			{!isRateLimitExceeded && <DataHeader changeUsername={setUsername} username={username} setRefresh={setRefresh}/>}
+			{!isRateLimitExceeded && <DataHeader changeUsername={setUsername} username={username} setRefresh={setRefresh} allUsernames={allUsernames}/>}
 			{username !== "" && !isRateLimitExceeded && <BasicUserData username={username} setIsRateLimitExceeded={setIsRateLimitExceeded}/>}
 			{username !== "" && currentRepo !== "" && !isRateLimitExceeded && <RepoHeader changeRepo={setCurrentRepo} repo={currentRepo} repos={repos}/>}
 			{username !== "" && currentRepo !== "" && !isRateLimitExceeded && <SpecifiedRepoData username={username} repo={currentRepo} />}

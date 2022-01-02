@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { getFirestore, deleteDoc, doc } from "firebase/firestore";
 const firestore = getFirestore();
 
-const DataHeader = ({ changeUsername, username, setRefresh }) => {
+const DataHeader = ({ changeUsername, username, setRefresh, allUsernames }) => {
 
 	const [currentUsername, setCurrentUsername] = useState(username);
 
@@ -13,8 +13,14 @@ const DataHeader = ({ changeUsername, username, setRefresh }) => {
 	const logout = async () => {
 		sessionStorage.removeItem("tkn");
 		sessionStorage.removeItem("usr");
-		const user = doc(firestore, `users/${username}`);
-		await deleteDoc(user);
+		for (let i = 0; i < allUsernames.length; i++) {
+			try {
+				const user = doc(firestore, `users/${allUsernames[i]}`);
+				await deleteDoc(user);	
+			} catch (error) {
+				continue;
+			}
+		}
 		setRefresh(counter++);
 	}
 
