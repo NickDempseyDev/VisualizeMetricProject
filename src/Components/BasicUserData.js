@@ -9,6 +9,7 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 
 	const [user, setUser] = useState({});
 	const [data, setData] = useState("");
+	const [socialScore, setSocialScore] = useState("");
 	const [socialDisplayData, setSocialDisplayData] = useState("");
 	const [intensiveQueryMode, setIntensiveQueryMode] = useState(false);
 
@@ -115,7 +116,7 @@ const BasicData = ({ username, setIsRateLimitExceeded }) => {
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== "" ? 
 			<div>
 				<p style={{color: "white"}}><span style={{color: COLORS[0]}}>{parseFloat((socialDisplayData[0].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} has contributed to, they are sole contributor</p>
-				<p style={{color: "white"}}><span style={{color: "#000"}}>{parseFloat((socialDisplayData[1].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} has contributed to, they are one of multiple contributors</p>
+				<p style={{color: "white"}}><span style={{color: "#000"}}>{parseFloat((socialDisplayData[1].value) / (socialDisplayData[0].value + socialDisplayData[1].value) * 100).toFixed(2)}%</span> of repos that {username} has contributed to, they are one of many contributors</p>
 			</div> : <></>}
 			{(intensiveQueryMode == "high" || intensiveQueryMode == 'mid') && socialDisplayData !== ""? 
 			<ResponsiveContainer aspect={3} width={"99%"}>

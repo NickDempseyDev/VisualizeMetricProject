@@ -14,7 +14,11 @@ const SpecifiedRepoData = ({ username, repo }) => {
 	useEffect(() => {
     if (repo !== oldRepo) {
       helpers.getCommitsOverTime(username, repo).then(res => {setCommitsOverTime(res.reverse())});
-      helpers.getAdditionsDeletionsRatios(username, repo).then(res => {setActivity(res)})
+      helpers.getAdditionsDeletionsRatios(username, repo).then(res => {
+        if (res[0] !== -1) {
+          setActivity(res)
+        }
+      })
       setOldRepo(repo);
     }
 	}, [repo, username])

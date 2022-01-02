@@ -19,7 +19,6 @@ export default function App() {
         return (<pre>{JSON.stringify(item)}</pre>)
       })} */}
       {!sessionStorage.getItem("tkn") ? <Login callBck={setLoginAttempt}/> : <Home setRefresh={setRefresh}/>}
-      
     </div>
   )
 }

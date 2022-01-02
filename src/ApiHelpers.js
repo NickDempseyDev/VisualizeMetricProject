@@ -8,7 +8,9 @@ const getOptions = () => {
   if (sessionStorage.getItem("tkn") !== "null") { 
     return {
       method: "GET",
-      Authorization: `Bearer ${sessionStorage.getItem("tkn")}`
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("tkn")}`
+      }
     };
   } else {
     return {
@@ -20,8 +22,10 @@ const getOptions = () => {
 const storeToDB = async (username, data, label) => {
   const user = doc(firestore, `users/${username}`);
   let obj = {};
-  obj[label] = data;
-  setDoc(user, obj, { merge: true });
+  obj[label] = data ? data : "";
+  if (obj[label] !== "") {
+    setDoc(user, obj, { merge: true });
+  }
 }
 
 const retrieveFromDB = async (username, label) => {
@@ -112,10 +116,10 @@ export const getAdditionsDeletionsRatios = async (username, repo) => {
     console.log("here");
     // get the first page of activity and check the size, if < 52 continue, otherwise calculate what page the last commit would be on
     let resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
-    console.log(resB);
-    // while (resB.status !== 200) {
-    //   resB = await axios(`https://api.github.com/repos/${username}/${repo}/stats/code_frequency?per_page=100&page=1`, getOptions());
-    // }
+
+    if (Object.keys(resB.data).length === 0) {
+      return [-1];
+    }
     const firstDateInMs = new Date(resB.data[0][0]);
     let firstDate = new Date(firstDateInMs)
     let lastPage;
@@ -273,6 +277,9 @@ export const getReposContributedTo = async (username, intensive) => {
     let temp = {};
     for (let index = 0; index < data.user.repositoriesContributedTo.nodes.length; index++) {
       const res = await getContributers(data.user.repositoriesContributedTo.nodes[index].owner.login, data.user.repositoriesContributedTo.nodes[index].name);
+      if (res[0] === -1) {
+        return {};
+      }
       temp[data.user.repositoriesContributedTo.nodes[index].name] = res;
     }
 
